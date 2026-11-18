@@ -74,14 +74,7 @@ export function Ouverture() {
         <Image src="/figma/ouverture/france-trait.webp" alt="" width={1286} height={1220} unoptimized priority className="ouverture-trait ouverture-calque absolute max-w-none" />
       </div>
       <div className="ouverture-boite">
-        <div className="ouverture-rotor">
-          <div className="absolute inset-y-0 left-1/2 right-0 overflow-clip">
-            <span className="ouverture-volet ouverture-volet-d" />
-          </div>
-          <div className="absolute inset-y-0 left-0 right-[calc(50%-1.5px)] overflow-clip">
-            <span className="ouverture-volet ouverture-volet-g" />
-          </div>
-        </div>
+        <div className="ouverture-rotor" />
       </div>
       <div className="ouverture-boite ouverture-traces">
         {pas.map((p, i) => (
