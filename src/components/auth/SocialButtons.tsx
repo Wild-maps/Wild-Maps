@@ -14,17 +14,13 @@ const fournisseurs: { id: Fournisseur; name: string; src: string; className: str
   { id: "google", name: "Google", src: "/figma/auth/logo-google.png", className: "left-[22.95%] top-[22.95%] size-[55.74%]" },
 ];
 
-// Boutons Google et Facebook : Supabase redirige vers le fournisseur, puis vers /auth/callback qui ouvre la session.
-// Un nouveau compte est créé automatiquement à la première connexion. Apple n'est pas encore branché.
+// Boutons Facebook, Apple et Google : Supabase redirige vers le fournisseur, puis vers /auth/callback qui ouvre la session.
+// Un nouveau compte est créé automatiquement à la première connexion.
 export function SocialButtons({ action }: { action: "Se connecter" | "S’inscrire" }) {
   const [message, setMessage] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
 
   async function continuer(fournisseur: (typeof fournisseurs)[number]) {
-    if (fournisseur.id === "apple") {
-      setMessage("La connexion avec Apple arrive bientôt.");
-      return;
-    }
     setMessage(null);
     setEnCours(true);
     try {

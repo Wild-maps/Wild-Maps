@@ -12,6 +12,7 @@ import { useCompte, type Fournisseur } from "./useCompte";
 const services: Record<Fournisseur, { nom: string; logo: string | null; className: string }> = {
   google: { nom: "Google", logo: "/figma/auth/logo-google.png", className: "left-[22.95%] top-[22.95%] size-[55.74%]" },
   facebook: { nom: "Facebook", logo: "/figma/auth/logo-facebook.png", className: "left-[21.31%] top-[22.95%] size-[57.38%]" },
+  apple: { nom: "Apple", logo: "/figma/auth/logo-apple.png", className: "left-[21.31%] top-[19.67%] size-[60.66%]" },
   email: { nom: "e-mail et mot de passe", logo: null, className: "" },
 };
 
