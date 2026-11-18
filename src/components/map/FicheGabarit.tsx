@@ -57,7 +57,9 @@ export function ListePastilles({ pastilles, className = "", libelle = "" }: { pa
   );
 }
 
-function Lecteur() {
+export type Vue3D = { actif: boolean; onBasculer: () => void };
+
+function Lecteur({ vue3D }: { vue3D?: Vue3D }) {
   return (
     <div aria-hidden className="compose-lecteur pointer-events-none absolute left-0 top-716.5 h-116.5 w-418 select-none">
       <span className="absolute inset-0 backdrop-blur-[5px]" />
@@ -81,8 +83,27 @@ function Lecteur() {
       <span className="absolute flex items-center justify-center" style={{ left: p(270), top: p(32.5), width: p(57.6), height: p(57.6) }}>
         <Image src="/figma/map/fiche-lecteur-volume.svg" alt="" width={41} height={41} className="max-w-none rotate-[46.01deg]" style={{ width: p(40.77), height: p(40.77) }} />
       </span>
-      <Image src="/figma/map/fiche-pastille-3d.svg" alt="" width={61} height={61} className="absolute max-w-none" style={{ left: p(341), top: p(33.5), width: p(61), height: p(61) }} />
-      <Image src="/figma/map/fiche-vue-3d.png" alt="" width={37} height={37} className="absolute max-w-none" style={{ left: p(351), top: p(42.5), width: p(37), height: p(37) }} />
+      {vue3D ? (
+        // le lecteur est décoratif (pointer-events-none) : seul le cube 3D est cliquable quand l'animal a un modèle
+        <button
+          type="button"
+          aria-pressed={vue3D.actif}
+          aria-label={vue3D.actif ? "Revenir à l’illustration" : "Voir l’animal en 3D"}
+          onClick={vue3D.onBasculer}
+          className={`pointer-events-auto absolute cursor-pointer rounded-full transition-[scale,box-shadow] duration-150 ease-sortie hover:scale-105 active:scale-95 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ciel motion-reduce:transition-none ${
+            vue3D.actif ? "shadow-[0_0_0_calc(4*var(--f))_var(--color-ciel)]" : ""
+          }`}
+          style={{ left: p(341), top: p(33.5), width: p(61), height: p(61) }}
+        >
+          <Image src="/figma/map/fiche-pastille-3d.svg" alt="" width={61} height={61} className="absolute inset-0 size-full max-w-none" />
+          <Image src="/figma/map/fiche-vue-3d.png" alt="" width={37} height={37} className="absolute max-w-none" style={{ left: p(10), top: p(9), width: p(37), height: p(37) }} />
+        </button>
+      ) : (
+        <>
+          <Image src="/figma/map/fiche-pastille-3d.svg" alt="" width={61} height={61} className="absolute max-w-none" style={{ left: p(341), top: p(33.5), width: p(61), height: p(61) }} />
+          <Image src="/figma/map/fiche-vue-3d.png" alt="" width={37} height={37} className="absolute max-w-none" style={{ left: p(351), top: p(42.5), width: p(37), height: p(37) }} />
+        </>
+      )}
     </div>
   );
 }
@@ -117,6 +138,7 @@ type FicheGabaritProps = {
   sousTitreStyle?: CSSProperties;
   illustration: ReactNode;
   lecteur?: boolean;
+  vue3D?: Vue3D;
   petitesTraces?: boolean;
   onFermer: () => void;
   children: ReactNode;
@@ -130,6 +152,7 @@ export function FicheGabarit({
   sousTitreStyle,
   illustration,
   lecteur = false,
+  vue3D,
   petitesTraces = false,
   onFermer,
   children,
@@ -153,7 +176,7 @@ export function FicheGabarit({
               {sousTitre}
             </p>
           </div>
-          {lecteur && <Lecteur />}
+          {lecteur && <Lecteur vue3D={vue3D} />}
         </div>
       </div>
 

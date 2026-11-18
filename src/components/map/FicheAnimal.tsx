@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { useId } from "react";
+import { useId, useState } from "react";
 import { rang } from "@/components/ui/rang";
 import type { Aliment, Animal, FicheAnimal as Fiche, LigneFiche } from "@/data/types";
 import { encart, FicheGabarit, police, TexteFiche } from "./FicheGabarit";
 import { placer } from "./geometrie";
 import { ImageRecadree } from "./ImageRecadree";
+import { Modele3D } from "./Modele3D";
 
 const icones: Record<string, { src: string; w: number; h: number }> = {
   fruits: { src: "/figma/map/icone-fruits.svg", w: 40, h: 38 },
@@ -39,6 +40,8 @@ function IconeAliment({ aliment }: { aliment: Aliment }) {
 
 export function FicheAnimal({ animal, fiche, onFermer }: { animal: Animal; fiche: Fiche; onFermer: () => void }) {
   const titreId = useId();
+  const [en3D, setEn3D] = useState(false);
+  const modele = animal.modele3d;
 
   return (
     <FicheGabarit
@@ -48,14 +51,19 @@ export function FicheAnimal({ animal, fiche, onFermer }: { animal: Animal; fiche
       sousTitreClasse="text-[length:calc(36*var(--f))] leading-[calc(40*var(--f))] tracking-[0.02em]"
       sousTitreStyle={{ color: fiche.couleurStatut }}
       illustration={
-        <ImageRecadree
-          src={fiche.portrait.src}
-          recadrage={fiche.portrait.recadrage}
-          largeur={fiche.portrait.boite.w}
-          style={placer(fiche.portrait.boite)}
-        />
+        modele && en3D ? (
+          <Modele3D modele={modele} nom={animal.nom} />
+        ) : (
+          <ImageRecadree
+            src={fiche.portrait.src}
+            recadrage={fiche.portrait.recadrage}
+            largeur={fiche.portrait.boite.w}
+            style={placer(fiche.portrait.boite)}
+          />
+        )
       }
       lecteur
+      vue3D={modele ? { actif: en3D, onBasculer: () => setEn3D((v) => !v) } : undefined}
       petitesTraces={fiche.petitesTraces}
       onFermer={onFermer}
     >

@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# modèles 3D sources et exports lourds (.blend, .glb non allégés) : à garder sur le Drive, jamais sur GitHub
+/modeles-3d/
+
 # vercel
 .vercel
 

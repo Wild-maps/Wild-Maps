@@ -30,11 +30,15 @@ export type FicheAnimal = {
   anecdotes: Texte;
 };
 
+// Modèle .glb (colonne animals.model_3d_url) et, s'il est sous licence CC Attribution, le crédit de son auteur
+export type Modele3D = { url: string; credit?: string };
+
 export type Animal = {
   slug: string;
   nom: string;
   vignette: ImageCadree & { arrondi?: boolean };
   fiche?: FicheAnimal;
+  modele3d?: Modele3D;
 };
 
 export type Habitat = {

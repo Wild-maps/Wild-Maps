@@ -9,7 +9,13 @@ export type LigneRegion = {
   region_animals: {
     position: number;
     details: { nom?: string; vignette?: Animal["vignette"] } | null;
-    animals: { slug: string; name: string; details: { fiche?: FicheAnimal } | null } | null;
+    animals: {
+      slug: string;
+      name: string;
+      model_3d_url: string | null;
+      model_credit: string | null;
+      details: { fiche?: FicheAnimal } | null;
+    } | null;
   }[];
   region_habitats: { map_x: number | null; map_y: number | null; habitats: { slug: string; details: Habitat | null } | null }[];
   region_associations: {
@@ -21,7 +27,7 @@ export type LigneRegion = {
 
 export const REGION_SELECT =
   "slug,name,details," +
-  "region_animals(position,details,animals(slug,name,details))," +
+  "region_animals(position,details,animals(slug,name,model_3d_url,model_credit,details))," +
   "region_habitats(map_x,map_y,habitats(slug,details))," +
   "region_associations(map_x,map_y,associations(slug,details))";
 
@@ -38,7 +44,8 @@ export function versContenu(ligne: LigneRegion): RegionContenu | null {
       const vignette = details?.vignette;
       if (!animals || !vignette) return [];
       const fiche = animals.details?.fiche;
-      return [{ slug: animals.slug, nom: details?.nom ?? animals.name, vignette, ...(fiche ? { fiche } : {}) }];
+      const modele3d = animals.model_3d_url ? { url: animals.model_3d_url, ...(animals.model_credit ? { credit: animals.model_credit } : {}) } : undefined;
+      return [{ slug: animals.slug, nom: details?.nom ?? animals.name, vignette, ...(fiche ? { fiche } : {}), ...(modele3d ? { modele3d } : {}) }];
     });
 
   const habitats = ligne.region_habitats.flatMap((l) => (l.habitats?.details ? [{ habitat: l.habitats.details, x: l.map_x, y: l.map_y }] : []));

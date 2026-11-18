@@ -70,4 +70,16 @@ Le contenu vient de Supabase (`src/lib/regions.ts`), mis en cache une minute. Un
 
 Les fichiers `src/data/*.ts` servent de secours si Supabase est injoignable et de modèle pour le format des fiches (`src/data/types.ts`). La mise en page des fiches (boîtes, recadrages) reste celle exportée de la maquette Figma.
 
-Pour ajouter une région : renseigner ses lignes dans les tables ci-dessus, puis passer `is_active_v1` à `true`. Les modèles 3D (`.glb`) et les images iront dans les buckets Storage `models` et `images`.
+Pour ajouter une région : renseigner ses lignes dans les tables ci-dessus, puis passer `is_active_v1` à `true`.
+
+## Modèles 3D
+
+La fiche d'un animal affiche un cube 3D cliquable dès que `animals.model_3d_url` est renseigné : le visiteur voit alors l'animal en 3D à la place de l'illustration (lecteur `@google/model-viewer`, chargé seulement à l'ouverture de la vue 3D, `src/components/map/Modele3D.tsx`). Si `animals.model_credit` est renseigné (licence CC Attribution), le crédit s'affiche sous le modèle.
+
+Pour ajouter un modèle :
+
+1. Format `.glb` (depuis Blender : File > Export > glTF 2.0, format glTF Binary, textures embarquées). Les fichiers sources restent dans `modeles-3d/` (ignoré par Git) ou sur le Drive.
+2. Alléger à environ 5 Mo (les fichiers du Drive font 100 à 350 Mo, bien trop pour le web). Commande à essayer, non testée dans ce dépôt : `npx @gltf-transform/cli optimize entree.glb sortie.glb --compress meshopt --texture-compress webp --texture-size 1024`.
+3. Déposer le fichier dans le bucket Supabase `models` (Storage, limite de 25 Mo) et copier son URL publique dans `animals.model_3d_url`.
+
+Le renard roux est le seul animal avec une fiche en base pour l'instant ; ajouter la fiche d'un animal (sanglier, loutre…) demande d'abord de créer sa ligne dans `animals` et `region_animals`.
