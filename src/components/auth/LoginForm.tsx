@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AuthNotice, Separator, primaryButton, secondaryButton, subtitle } from "./AuthCard";
@@ -25,15 +25,13 @@ function ErreurDeRetour() {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const { errors, notice, setNotice, isPending, formProps } = useAuthForm(rules, async (valeurs) => {
     const { error } = await createClient().auth.signInWithPassword({
       email: String(valeurs.get("email")).trim(),
       password: String(valeurs.get("password")),
     });
     if (error) return messageConnexion(error);
-    router.push("/carte");
-    router.refresh();
+    window.location.href = "/carte";
     return "Connexion réussie, redirection en cours…";
   });
 
