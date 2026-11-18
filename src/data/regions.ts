@@ -155,35 +155,37 @@ export type Suggestion = {
   href?: string;
 };
 
-export const indexRecherche: Suggestion[] = [
-  ...regionsCarte.map<Suggestion>((r) => ({
-    type: "region",
-    libelle: r.nom,
-    detail: r.contenu ? "Région" : "Bientôt disponible",
-    region: r.slug,
-    href: r.contenu ? `/carte/${r.contenu}` : undefined,
-  })),
-  ...Object.values(contenusRegion).flatMap((c) => [
-    ...c.animaux.map<Suggestion>((a) => ({
-      type: "animal",
-      libelle: a.nom,
-      detail: c.nom,
-      region: c.slug,
-      href: `/carte/${c.slug}#animal-${a.slug}`,
+export function construireIndex(contenus: RegionContenu[], actifs: ReadonlySet<string>): Suggestion[] {
+  return [
+    ...regionsCarte.map<Suggestion>((r) => ({
+      type: "region",
+      libelle: r.nom,
+      detail: actifs.has(r.slug) ? "Région" : "Bientôt disponible",
+      region: r.slug,
+      href: actifs.has(r.slug) ? `/carte/${r.slug}` : undefined,
     })),
-    ...c.associations.map<Suggestion>((a) => ({
-      type: "association",
-      libelle: a.nom,
-      detail: c.nom,
-      region: c.slug,
-      href: `/carte/${c.slug}#association-${a.slug}`,
-    })),
-    ...c.habitats.map<Suggestion>((h) => ({
-      type: "habitat",
-      libelle: `${h.titre} — ${h.sousTitre}`,
-      detail: c.nom,
-      region: c.slug,
-      href: `/carte/${c.slug}#habitat-${h.slug}`,
-    })),
-  ]),
-];
+    ...contenus.flatMap((c) => [
+      ...c.animaux.map<Suggestion>((a) => ({
+        type: "animal",
+        libelle: a.nom,
+        detail: c.nom,
+        region: c.slug,
+        href: `/carte/${c.slug}#animal-${a.slug}`,
+      })),
+      ...c.associations.map<Suggestion>((a) => ({
+        type: "association",
+        libelle: a.nom,
+        detail: c.nom,
+        region: c.slug,
+        href: `/carte/${c.slug}#association-${a.slug}`,
+      })),
+      ...c.habitats.map<Suggestion>((h) => ({
+        type: "habitat",
+        libelle: `${h.titre} — ${h.sousTitre}`,
+        detail: c.nom,
+        region: c.slug,
+        href: `/carte/${c.slug}#habitat-${h.slug}`,
+      })),
+    ]),
+  ];
+}

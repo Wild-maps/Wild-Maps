@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { rang } from "@/components/ui/rang";
-import { regionsCarte, type RegionCarte } from "@/data/regions";
+import { regionsCarte, type RegionCarte, type Suggestion } from "@/data/regions";
 import { Annonce, useAnnonce } from "./Annonce";
 import { BarreCarte } from "./BarreCarte";
 import { Cadre } from "./Cadre";
@@ -32,7 +32,7 @@ const classeTrace = "fill-transparent stroke-transparent stroke-[4] outline-none
 
 let carteDessinee = false;
 
-export function CarteFrance() {
+export function CarteFrance({ actives, index }: { actives: string[]; index: Suggestion[] }) {
   const router = useRouter();
   const [survol, setSurvol] = useState<string | null>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -95,7 +95,7 @@ export function CarteFrance() {
 
   return (
     <>
-      <BarreCarte retour={{ href: "/", label: "Retour à l’accueil" }} libelleSurvol={active?.libelle} onBientot={annoncer} />
+      <BarreCarte index={index} retour={{ href: "/", label: "Retour à l’accueil" }} libelleSurvol={active?.libelle} onBientot={annoncer} />
       <main className="relative h-dvh overflow-hidden bg-foret-950">
         <h1 className="sr-only">Carte de France des régions</h1>
         <Cadre>
@@ -147,21 +147,21 @@ export function CarteFrance() {
 
             <svg viewBox="0 0 1920 1000" className="absolute inset-0 size-full" role="group" aria-label="Régions de France">
               {regions.map((r) =>
-                r.contenu ? (
+                actives.includes(r.slug) ? (
                   <a
                     key={r.slug}
-                    href={`/carte/${r.contenu}`}
+                    href={`/carte/${r.slug}`}
                     aria-label={r.nom}
                     className="group cursor-pointer outline-none"
-                    onClick={(e) => suivreLien(e, r, `/carte/${r.contenu}`)}
+                    onClick={(e) => suivreLien(e, r, `/carte/${r.slug}`)}
                     {...evenements(r)}
                     onPointerEnter={() => {
                       setSurvol(r.slug);
-                      router.prefetch(`/carte/${r.contenu}`);
+                      router.prefetch(`/carte/${r.slug}`);
                     }}
                     onFocus={() => {
                       setSurvol(r.slug);
-                      router.prefetch(`/carte/${r.contenu}`);
+                      router.prefetch(`/carte/${r.slug}`);
                     }}
                   >
                     <path d={r.d} transform={`translate(${r.x} ${r.y})`} className={`${classeTrace} group-focus-visible:stroke-ciel`} />

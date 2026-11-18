@@ -69,7 +69,7 @@ export type Zone = { src: string; boite: Boite };
 export type ZoneTracee = { boite: Boite; d: string; remplissage?: number };
 
 export type RegionContenu = {
-  slug: RegionSlug;
+  slug: string;
   nom: string;
   paysage: ImageCadree;
   zones: ZoneTracee[];

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { RegionVue } from "@/components/map/RegionVue";
-import { contenusRegion, trouverContenu } from "@/data/regions";
+import { chargerContenus, getContenu, getIndexRecherche } from "@/lib/regions";
 
 export async function generateMetadata({ params }: PageProps<"/carte/[region]">): Promise<Metadata> {
-  const contenu = trouverContenu((await params).region);
+  const contenu = await getContenu((await params).region);
   return {
     title: `${contenu?.nom ?? "Région"} — WildMap`,
     description: contenu
@@ -14,15 +14,15 @@ export async function generateMetadata({ params }: PageProps<"/carte/[region]">)
   };
 }
 
-export function generateStaticParams() {
-  return Object.keys(contenusRegion).map((region) => ({ region }));
+export async function generateStaticParams() {
+  return (await chargerContenus()).map(({ slug }) => ({ region: slug }));
 }
 
 async function Region({ params }: { params: Promise<{ region: string }> }) {
   const { region } = await params;
-  const contenu = trouverContenu(region);
+  const [contenu, index] = await Promise.all([getContenu(region), getIndexRecherche()]);
   if (!contenu) notFound();
-  return <RegionVue key={contenu.slug} slug={contenu.slug} />;
+  return <RegionVue key={contenu.slug} contenu={contenu} index={index} />;
 }
 
 export default function RegionPage({ params }: PageProps<"/carte/[region]">) {

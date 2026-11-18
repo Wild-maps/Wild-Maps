@@ -13,6 +13,7 @@ const pastilleFond = "absolute -left-[3.33%] top-0 h-[113.33%] w-[113.33%] max-w
 const pastilleIcone = "absolute left-1/2 top-1/2 h-auto w-[56.67%] -translate-x-1/2 -translate-y-1/2";
 
 type BarreCarteProps = {
+  index: Suggestion[];
   retour: { href: string; label: string };
   libelleSurvol?: string | null;
   onSuggestion?: (s: Suggestion) => boolean;
@@ -21,7 +22,7 @@ type BarreCarteProps = {
   patteRef?: Ref<HTMLButtonElement>;
 };
 
-export function BarreCarte({ retour, libelleSurvol, onSuggestion, onBientot, patte, patteRef }: BarreCarteProps) {
+export function BarreCarte({ index, retour, libelleSurvol, onSuggestion, onBientot, patte, patteRef }: BarreCarteProps) {
   const infobulle = useId();
 
   return (
@@ -36,7 +37,7 @@ export function BarreCarte({ retour, libelleSurvol, onSuggestion, onBientot, pat
           <Image src="/figma/map/icone-retour.svg" alt="" width={31} height={31} className="size-[clamp(24px,1.615vw,31px)]" />
         </PillButton>
 
-        <Recherche libelleSurvol={libelleSurvol} onSuggestion={onSuggestion} onBientot={onBientot} />
+        <Recherche index={index} libelleSurvol={libelleSurvol} onSuggestion={onSuggestion} onBientot={onBientot} />
 
         <div className="ml-auto flex items-center gap-[clamp(10px,1.615vw,31px)]">
           {patte && (

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { rang } from "@/components/ui/rang";
-import { contenusRegion, type Suggestion } from "@/data/regions";
-import type { Animal, Epingle, RegionContenu, RegionSlug } from "@/data/types";
+import type { Suggestion } from "@/data/regions";
+import type { Animal, Epingle, RegionContenu } from "@/data/types";
 import { Annonce, useAnnonce } from "./Annonce";
 import { BarreCarte } from "./BarreCarte";
 import { Cadre } from "./Cadre";
@@ -58,8 +58,7 @@ function nomEpingle(e: Epingle, contenu: RegionContenu) {
   return `Association : ${contenu.associations.find((x) => x.slug === e.cible)?.nom ?? e.cible}`;
 }
 
-export function RegionVue({ slug }: { slug: RegionSlug }) {
-  const contenu = contenusRegion[slug];
+export function RegionVue({ contenu, index }: { contenu: RegionContenu; index: Suggestion[] }) {
   const [carrousel, setCarrousel] = useState(false);
   const [fiche, setFiche] = useState<Ouverte | null>(null);
   const { annonce, annoncer } = useAnnonce();
@@ -133,6 +132,7 @@ export function RegionVue({ slug }: { slug: RegionSlug }) {
   return (
     <>
       <BarreCarte
+        index={index}
         retour={{ href: "/carte", label: "Retour à la carte de France" }}
         onSuggestion={ouvrirDepuisRecherche}
         onBientot={annoncer}

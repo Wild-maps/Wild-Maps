@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useId, useMemo, useState, type KeyboardEvent } from "react";
-import { indexRecherche, type Suggestion } from "@/data/regions";
+import type { Suggestion } from "@/data/regions";
 
 const PLACEHOLDER = "Rechercher une région, un animal ou encore une association";
 
@@ -23,9 +23,7 @@ const normaliser = (texte: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const entrees = indexRecherche.map((s) => ({ s, cle: normaliser(s.libelle) }));
-
-function chercher(requete: string): Suggestion[] {
+function chercher(entrees: { s: Suggestion; cle: string }[], requete: string): Suggestion[] {
   const q = normaliser(requete);
   if (!q) return [];
   return entrees
@@ -37,18 +35,20 @@ function chercher(requete: string): Suggestion[] {
 }
 
 type RechercheProps = {
+  index: Suggestion[];
   libelleSurvol?: string | null;
   onSuggestion?: (s: Suggestion) => boolean;
   onBientot: (nom: string) => void;
 };
 
-export function Recherche({ libelleSurvol, onSuggestion, onBientot }: RechercheProps) {
+export function Recherche({ index, libelleSurvol, onSuggestion, onBientot }: RechercheProps) {
   const router = useRouter();
   const id = useId();
   const [requete, setRequete] = useState("");
   const [ouvert, setOuvert] = useState(false);
   const [actif, setActif] = useState(0);
-  const resultats = useMemo(() => chercher(requete), [requete]);
+  const entrees = useMemo(() => index.map((s) => ({ s, cle: normaliser(s.libelle) })), [index]);
+  const resultats = useMemo(() => chercher(entrees, requete), [entrees, requete]);
   const listeVisible = ouvert && requete.trim() !== "";
 
   function choisir(s: Suggestion) {
