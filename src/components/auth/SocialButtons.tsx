@@ -32,7 +32,10 @@ export function SocialButtons({ action }: { action: "Se connecter" | "S’inscri
       if (!(await fournisseurActif(fournisseur.id))) throw new Error("fournisseur désactivé");
       const { error } = await createClient().auth.signInWithOAuth({
         provider: fournisseur.id,
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=/carte` },
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/carte`,
+          queryParams: fournisseur.id === "google" ? { prompt: "select_account" } : undefined,
+        },
       });
       if (!error) return;
     } catch {}
