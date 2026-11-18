@@ -24,7 +24,7 @@ const motifs = [
   { haut: 738, cote: "left-[96.877%] rotate-180" },
 ];
 
-const legal = ["Mentions légales", "Confidentialité", "CGU"];
+const legal = [{ label: "Mentions légales" }, { label: "Confidentialité", href: "/confidentialite" }, { label: "CGU" }];
 
 const titreColonne = "font-ui text-[clamp(20px,1.354vw,26px)] text-creme";
 const liste = "mt-[clamp(12px,1.146vw,22px)] flex flex-col items-start gap-[clamp(8px,0.677vw,13px)] text-[clamp(14px,0.885vw,17px)]";
@@ -100,11 +100,17 @@ export function Footer() {
                 </a>
               </li>
               {legal.map((l) => (
-                <li key={l}>
-                  <span title="Bientôt disponible" className={`${bouton} cursor-default opacity-60`}>
-                    {l}
-                    <span className="sr-only">, bientôt disponible</span>
-                  </span>
+                <li key={l.label}>
+                  {l.href ? (
+                    <Link href={l.href} className={lien}>
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <span title="Bientôt disponible" className={`${bouton} cursor-default opacity-60`}>
+                      {l.label}
+                      <span className="sr-only">, bientôt disponible</span>
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
