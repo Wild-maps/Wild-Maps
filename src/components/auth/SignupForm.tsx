@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { AuthNotice, Separator, primaryButton, secondaryButton, subtitle } from "./AuthCard";
+import { COMPTE_EXISTANT, messageInscription } from "./messages";
+import { SocialButtons } from "./SocialButtons";
 import { TextField } from "./TextField";
 import { useAuthForm } from "./useAuthForm";
 
@@ -12,15 +16,32 @@ const rules = {
     missing: "Indiquez votre adresse email.",
     invalid: "Cette adresse email n’est pas valide (ex : email@email.com).",
   },
-  password: { missing: "Choisissez un mot de passe." },
+  password: { missing: "Choisissez un mot de passe.", invalid: "Le mot de passe doit contenir au moins 8 caractères." },
   cgu: { missing: "Acceptez les Conditions Générales pour créer votre compte." },
 };
 
 export function SignupForm() {
-  const { errors, notice, setNotice, isPending, formProps } = useAuthForm(
-    rules,
-    "L’inscription arrive bientôt : WildMap est encore en construction.",
-  );
+  const router = useRouter();
+  const { errors, notice, setNotice, isPending, formProps } = useAuthForm(rules, async (valeurs) => {
+    const email = String(valeurs.get("email")).trim();
+    const { data, error } = await createClient().auth.signUp({
+      email,
+      password: String(valeurs.get("password")),
+      options: {
+        data: { full_name: String(valeurs.get("name")).trim() },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/carte`,
+      },
+    });
+    if (error) return messageInscription(error);
+    // Supabase ne signale pas une adresse déjà inscrite par une erreur : le compte renvoyé n'a simplement aucune identité
+    if (data.user?.identities?.length === 0) return COMPTE_EXISTANT;
+    if (data.session) {
+      router.push("/carte");
+      router.refresh();
+      return "Compte créé, bienvenue sur WildMap !";
+    }
+    return `Compte créé ! Un email de confirmation vient d’être envoyé à ${email}. Cliquez sur le lien qu’il contient pour activer votre compte.`;
+  });
 
   return (
     <div className="pb-[clamp(28px,2.656vw,51px)]">
@@ -55,6 +76,7 @@ export function SignupForm() {
           icon="cle"
           placeholder="Ex : Mdp$123"
           autoComplete="new-password"
+          minLength={8}
           required
           error={errors.password}
           className="mt-[clamp(18px,1.51vw,29px)]"
@@ -114,6 +136,8 @@ export function SignupForm() {
       <Link href="/connexion" className={`${secondaryButton} mt-[clamp(16px,1.615vw,31px)]`}>
         Se connecter
       </Link>
+      <Separator className="mt-[clamp(20px,2.188vw,42px)]" />
+      <SocialButtons action="S’inscrire" />
     </div>
   );
 }

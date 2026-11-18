@@ -5,6 +5,8 @@ import { useState, useTransition, type FormEvent } from "react";
 export type FieldRule = { missing: string; invalid?: string };
 export type Notice = { zone: "form" | "social"; text: string };
 
+const ERREUR_GENERIQUE = "Une erreur est survenue. Réessayez dans un instant.";
+
 function findErrors<K extends string>(form: HTMLFormElement, rules: Record<K, FieldRule>) {
   const errors: Partial<Record<K, string>> = {};
   for (const name of Object.keys(rules) as K[]) {
@@ -17,7 +19,9 @@ function findErrors<K extends string>(form: HTMLFormElement, rules: Record<K, Fi
   return errors;
 }
 
-export function useAuthForm<K extends string>(rules: Record<K, FieldRule>, submitNotice: string) {
+// `submit` reçoit les valeurs du formulaire une fois les champs validés et renvoie le message à afficher
+// (ou null s'il n'y en a pas, par exemple après une redirection).
+export function useAuthForm<K extends string>(rules: Record<K, FieldRule>, submit: (values: FormData) => Promise<string | null>) {
   const [errors, setErrors] = useState<Partial<Record<K, string>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -37,7 +41,15 @@ export function useAuthForm<K extends string>(rules: Record<K, FieldRule>, submi
       return;
     }
 
-    startTransition(() => setNotice({ zone: "form", text: submitNotice }));
+    const values = new FormData(form);
+    startTransition(async () => {
+      try {
+        const text = await submit(values);
+        setNotice(text ? { zone: "form", text } : null);
+      } catch {
+        setNotice({ zone: "form", text: ERREUR_GENERIQUE });
+      }
+    });
   }
 
   function onChange(event: FormEvent<HTMLFormElement>) {

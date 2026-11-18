@@ -50,6 +50,12 @@ src/
 public/figma/   images et illustrations de la maquette
 ```
 
+## Comptes
+
+L'inscription et la connexion passent par Supabase Auth : email et mot de passe (avec email de confirmation), Google et Facebook (Apple n'est pas branché). Chaque compte reçoit une ligne dans `public.profiles` (nom, photo) créée par un déclencheur. Le retour de Google, de Facebook et du lien de confirmation passe par `/auth/callback`.
+
+Google et Facebook ne fonctionnent qu'une fois activés dans Supabase (Authentication > Providers), avec les identifiants créés dans Google Cloud Console et Meta for Developers. Tant qu'un fournisseur est désactivé, son bouton affiche « pas disponible pour le moment ». Adresse de retour à déclarer chez Google et Facebook : `https://nvezkxhjbhbfghqzhiup.supabase.co/auth/v1/callback`. Dans Authentication > URL Configuration, ajouter `https://wildmap-ten.vercel.app/auth/callback` et `http://localhost:3000/auth/callback` aux Redirect URLs.
+
 ## Données
 
 Le contenu vient de Supabase (`src/lib/regions.ts`), mis en cache une minute. Une région est cliquable sur la carte quand `regions.is_active_v1` vaut `true` et qu'elle a son paysage (`regions.details`). Les autres affichent « bientôt disponible ».

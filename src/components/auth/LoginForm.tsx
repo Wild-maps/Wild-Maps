@@ -1,12 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { AuthNotice, Separator, primaryButton, secondaryButton, subtitle } from "./AuthCard";
+import { messageConnexion } from "./messages";
+import { SocialButtons } from "./SocialButtons";
 import { TextField } from "./TextField";
 import { useAuthForm } from "./useAuthForm";
-
-const BIENTOT = "La connexion arrive bientôt : WildMap est encore en construction.";
 
 const rules = {
   email: {
@@ -16,14 +18,24 @@ const rules = {
   password: { missing: "Indiquez votre mot de passe." },
 };
 
-const socials = [
-  { name: "Facebook", src: "/figma/auth/logo-facebook.png", className: "left-[21.31%] top-[22.95%] size-[57.38%]" },
-  { name: "Apple", src: "/figma/auth/logo-apple.png", className: "left-[21.31%] top-[19.67%] size-[60.66%]" },
-  { name: "Google", src: "/figma/auth/logo-google.png", className: "left-[22.95%] top-[22.95%] size-[55.74%]" },
-];
+// Message affiché quand le retour de Google, Facebook ou du lien email a échoué (/connexion?erreur=connexion)
+function ErreurDeRetour() {
+  const echec = useSearchParams().get("erreur") === "connexion";
+  return <AuthNotice text={echec ? "La connexion a échoué. Réessayez ou utilisez une autre méthode." : null} />;
+}
 
 export function LoginForm() {
-  const { errors, notice, setNotice, isPending, formProps } = useAuthForm(rules, BIENTOT);
+  const router = useRouter();
+  const { errors, notice, setNotice, isPending, formProps } = useAuthForm(rules, async (valeurs) => {
+    const { error } = await createClient().auth.signInWithPassword({
+      email: String(valeurs.get("email")).trim(),
+      password: String(valeurs.get("password")),
+    });
+    if (error) return messageConnexion(error);
+    router.push("/carte");
+    router.refresh();
+    return "Connexion réussie, redirection en cours…";
+  });
 
   return (
     <div className="pb-[clamp(28px,2.083vw,40px)]">
@@ -78,27 +90,10 @@ export function LoginForm() {
       </Link>
       <Separator className="mt-[clamp(20px,1.979vw,38px)]" />
 
-      <div
-        role="group"
-        aria-label="Se connecter avec un autre compte"
-        className="ml-[clamp(8px,0.625vw,12px)] mr-[clamp(6px,0.469vw,9px)] mt-[clamp(20px,2.083vw,40px)] flex justify-between"
-      >
-        {socials.map((social) => (
-          <button
-            key={social.name}
-            type="button"
-            aria-label={`Se connecter avec ${social.name}`}
-            onClick={() => setNotice({ zone: "social", text: BIENTOT })}
-            className="relative size-[clamp(48px,3.177vw,61px)] cursor-pointer rounded-full transition-transform ease-sortie hover:-translate-y-0.5 active:scale-95 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ciel"
-          >
-            <span className="absolute inset-[0_-9.84%_-13.11%_-3.28%]">
-              <Image src="/figma/auth/pastille-reseau.svg" alt="" width={69} height={69} className="block size-full max-w-none" />
-            </span>
-            <Image src={social.src} alt="" width={37} height={37} className={`absolute object-cover ${social.className}`} />
-          </button>
-        ))}
-      </div>
-      <AuthNotice text={notice?.zone === "social" ? notice.text : null} />
+      <SocialButtons action="Se connecter" />
+      <Suspense fallback={null}>
+        <ErreurDeRetour />
+      </Suspense>
     </div>
   );
 }
