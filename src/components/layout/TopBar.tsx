@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BoutonCompte } from "@/components/compte/BoutonCompte";
 import { PillButton } from "@/components/ui/PillButton";
 
 const navLinks = [
@@ -39,9 +40,7 @@ export function TopBar({ current }: { current?: string }) {
               {link.label}
             </PillButton>
           ))}
-          <PillButton href="/connexion" variant="ciel" className={`${buttonSize} min-w-[clamp(140px,9.83vw,189px)]`}>
-            Se connecter
-          </PillButton>
+          <BoutonCompte className={`${buttonSize} min-w-[clamp(140px,9.83vw,189px)]`} />
         </nav>
 
         <Image
@@ -71,9 +70,7 @@ export function TopBar({ current }: { current?: string }) {
                 {link.label}
               </PillButton>
             ))}
-            <PillButton href="/connexion" variant="ciel" className="h-11 text-lg">
-              Se connecter
-            </PillButton>
+            <BoutonCompte className="h-11 text-lg" />
           </nav>
         </details>
       </div>

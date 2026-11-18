@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useId, type Ref } from "react";
+import { PastilleCompte } from "@/components/compte/PastilleCompte";
 import { PillButton } from "@/components/ui/PillButton";
 import type { Suggestion } from "@/data/regions";
 import { Recherche } from "./Recherche";
@@ -86,6 +87,8 @@ export function BarreCarte({ index, retour, libelleSurvol, onSuggestion, onBient
               Filtres bientôt disponibles
             </span>
           </span>
+
+          <PastilleCompte />
         </div>
       </div>
     </header>
